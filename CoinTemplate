@@ -1,11 +1,66 @@
 pragma solidity ^0.8.7;
 
+
+**/ -1,5% fee auto distribute to all holders
+    -2% fee add to the liquidity pool, locked forever when selling
+    -2,5% fee to marketing wallet
+    
+    21,000,000 total supply
+    42,000 tokens limitation for trade, 0.2% of the total supply
+*/  
+
+**/ Tokenomics
+    50% public sale
+    28% burn
+    10% staking
+    5%  marketing
+    3%  charity
+    3%  giveaways
+    1%  dev wallet
+*/    
+
+
+// function setTaxFeePercent(uint256 taxFee) external onlyOwner() { _taxFee = taxFee; }
+
+**/ function removeAllFee() private {
+        if(_taxFee == 0 && _liquidityFee == 0 && _PancakeFee == 0 && _marketingFee == 0) return;
+
+        _previousTaxFee = _taxFee;
+        _previousLiquidityFee = _liquidityFee;
+		_previousPancakeFee = _PancakeFee;
+		_previousMarketingFee = _marketingFee;
+
+        _taxFee = 0;
+        _liquidityFee = 0;
+		_marketingFee = 0;
+		_PancakeFee = 0;
+    }
+*/
+
+**/ function renounceOwnership() public virtual onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
+*/
+
+**/ function restoreAllFee() private {
+        _taxFee = _previousTaxFee;
+        _liquidityFee = _previousLiquidityFee;
+		_marketingFee = _previousMarketingFee;
+		_islandFee = _previousIslandFee;
+    }
+    ----------------------------------------------------------------------------------------------------------
+    TODO : Create ''Only owner'' functions and trading tax
+    ----------------------------------------------------------------------------------------------------------
+*/ 
+ 
+
 contract Token {
     mapping(address => uint) public balances;
     mapping(address => mapping(address => uint)) public allowance;
-    uint public totalSupply = 1000000 * 10 ** 18;
+    uint public totalSupply = 21000000 * 10 ** 18;
     string public name = "NAME";
-    string public symbol = "SHORT";
+    string public symbol = "SymbolName";
     uint public decimals = 18;
     
     event Transfer(address indexed from, address indexed to, uint value);
