@@ -1,0 +1,44 @@
+pragma solidity 0.8.7;
+
+contract MyContract {
+    uint256 public peopleCount = 0;
+    mapping(uint => Person) public people;
+
+    // Functions that only owner can call
+    address owner;
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        ;
+    }
+
+    // Functions that can only be called after a certain time
+    uint256 openingTime = 1643976000; // epoch time
+    modifier onlyWhileOpen() {
+        require(block.timestamp >= openingTime);
+        ;
+    }
+
+    struct Person {
+        uint _id;
+        string _firstName;
+        string _lastName;
+    }
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function addPersonOwner(string memory _firstName, string memory _lastName) public onlyOwner {
+        incrementCount();
+        people[peopleCount] = Person(peopleCount, _firstName, _lastName);
+    }
+
+    function addPersonTime(string memory _firstName, string memory _lastName) public onlyWhileOpen {
+        incrementCount();
+        people[peopleCount] = Person(peopleCount, _firstName, _lastName);
+    }
+
+    function incrementCount() internal {
+        peopleCount += 1;
+    }
+} 
