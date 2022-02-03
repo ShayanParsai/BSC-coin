@@ -1,0 +1,35 @@
+pragma solidity ^0.8.7;
+
+/*
+Fallback executed when
+- function dosent exist
+- directly send ETH
+
+
+Fallback() or receive()?
+
+    Ether is sent to contract
+
+        is msg.data empty?
+              / \
+            yes  no
+            /     \
+receive() exists?  fallback()
+          / \
+        Yes  No
+       /      \
+    receive()  fallback()      
+*/
+
+contract Fallback {
+    event log(string func, address sender, uint value, bytes data);
+
+    fallback() external payable {
+        emit log("fallback", msg.sender, msg.value, msg.data);
+    }
+
+    receive() external payable {
+        emit log("receive", msg.sender, msg.value, "");
+    }
+
+}
