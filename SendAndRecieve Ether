@@ -1,0 +1,21 @@
+pragma solidity ^0.8.7;
+
+contract SendEther {
+    constructor() payable {}
+
+    receive() external payable {}
+
+    function sendViaCall(address payable _to) external payable {
+       (bool success, ) = _to.call{value: 123}("");
+       require (success, "call failed");
+    }
+    
+}
+
+contract EthReceiver {
+    event Log(uint amount, uint gas);
+
+    receive() external payable {
+        emit Log(msg.value, gasleft());
+    }
+}
