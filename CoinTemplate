@@ -1,7 +1,7 @@
 pragma solidity ^0.8.7;
 
-
-**/ -1,5% fee auto distribute to all holders
+/*
+    -1,5% fee auto distribute to all holders
     -2% fee add to the liquidity pool, locked forever when selling
     -2,5% fee to marketing wallet
     
@@ -9,7 +9,8 @@ pragma solidity ^0.8.7;
     42,000 tokens limitation for trade, 0.2% of the total supply
 */  
 
-**/ Tokenomics
+/* 
+    Tokenomics
     50% public sale
     28% burn
     10% staking
@@ -19,55 +20,38 @@ pragma solidity ^0.8.7;
     1%  dev wallet
 */    
 
-
-// function setTaxFeePercent(uint256 taxFee) external onlyOwner() { _taxFee = taxFee; }
-
-**/ function removeAllFee() private {
-        if(_taxFee == 0 && _liquidityFee == 0 && _PancakeFee == 0 && _marketingFee == 0) return;
-
-        _previousTaxFee = _taxFee;
-        _previousLiquidityFee = _liquidityFee;
-		_previousPancakeFee = _PancakeFee;
-		_previousMarketingFee = _marketingFee;
-
-        _taxFee = 0;
-        _liquidityFee = 0;
-		_marketingFee = 0;
-		_PancakeFee = 0;
-    }
-*/
-
-**/ function renounceOwnership() public virtual onlyOwner {
-        emit OwnershipTransferred(_owner, address(0));
-        _owner = address(0);
-    }
-*/
-
-**/ function restoreAllFee() private {
-        _taxFee = _previousTaxFee;
-        _liquidityFee = _previousLiquidityFee;
-		_marketingFee = _previousMarketingFee;
-		_islandFee = _previousIslandFee;
-    }
-    ----------------------------------------------------------------------------------------------------------
-    TODO : Create ''Only owner'' functions and trading tax
-    ----------------------------------------------------------------------------------------------------------
-*/ 
- 
-
 contract Token {
     mapping(address => uint) public balances;
     mapping(address => mapping(address => uint)) public allowance;
     uint public totalSupply = 21000000 * 10 ** 18;
-    string public name = "NAME";
-    string public symbol = "SymbolName";
+    string public name = "CryptoCity";
+    string public symbol = "CCITY";
     uint public decimals = 18;
+
+    
     
     event Transfer(address indexed from, address indexed to, uint value);
     event Approval(address indexed owner, address indexed spender, uint value);
-    
-    constructor() {
+    event Purchase(
+        address indexed _buyer,
+        uint256 _amount
+    );
+
+    constructor(address payable _wallet) public {
+        wallet = _wallet;
         balances[msg.sender] = totalSupply;
+    }
+
+    function() external payable {
+        buyToken();
+    }
+
+    function buyToken() public payable {
+        // buy a token
+        balances[msg.sender] += 1;
+        // send ether to the wallet
+        wallet.transfer(msg.value);
+        emit Purchase(msg.sender, 1);
     }
     
     function balanceOf(address owner) public returns(uint) {
@@ -95,5 +79,33 @@ contract Token {
         allowance[msg.sender][spender] = value;
         emit Approval(msg.sender, spender, value);
         return true;   
+    }
+
+    function setTaxFeePercent(uint256 taxFee) external onlyOwner() { _taxFee = taxFee; }
+
+    function removeAllFee() private {
+        if(_taxFee == 0 && _liquidityFee == 0 && _PancakeFee == 0 && _marketingFee == 0) return;
+
+        _previousTaxFee = _taxFee;
+        _previousLiquidityFee = _liquidityFee;
+		_previousPancakeFee = _PancakeFee;
+		_previousMarketingFee = _marketingFee;
+
+        _taxFee = 0;
+        _liquidityFee = 0;
+		_marketingFee = 0;
+		_PancakeFee = 0;
+    }
+
+    function restoreAllFee() private {
+        _taxFee = _previousTaxFee;
+        _liquidityFee = _previousLiquidityFee;
+		_marketingFee = _previousMarketingFee;
+		_islandFee = _previousIslandFee;
+    }
+
+    function renounceOwnership() public virtual onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
     }
 }
